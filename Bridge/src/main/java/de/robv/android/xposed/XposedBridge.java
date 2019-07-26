@@ -101,6 +101,10 @@ public final class XposedBridge {
             throw new IllegalArgumentException("Cannot hook abstract methods: " + hookMethod.toString());
         }
 
+        if (callback == null) {
+            throw new IllegalArgumentException("callback should not be null!");
+        }
+
         boolean newMethod = false;
         CopyOnWriteSortedSet<XC_MethodHook> callbacks;
         synchronized (sHookedMethodCallbacks) {
