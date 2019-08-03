@@ -8,6 +8,7 @@ import com.zhenl.riru.common.KeepAll;
 import com.zhenl.riru.xposed.core.HookMethodResolver;
 import com.zhenl.riru.xposed.proxy.BlackWhiteListProxy;
 import com.zhenl.riru.xposed.proxy.NormalProxy;
+import com.zhenl.riru.xposed.util.ProcessHelper;
 import com.zhenl.riru.xposed.util.Utils;
 
 import java.lang.reflect.Method;
@@ -36,6 +37,9 @@ public class Main implements KeepAll {
                                             String niceName, int[] fdsToClose, int[] fdsToIgnore,
                                             boolean startChildZygote, String instructionSet,
                                             String appDataDir) {
+        if (isBlackListedProcess(uid)) {
+            return;
+        }
         if (BuildConfig.DEBUG) {
             forkAndSpecializePramsStr = String.format(
                     "Zygote#forkAndSpecialize(%d, %d, %s, %d, %s, %d, %s, %s, %s, %s, %s, %s, %s)",
@@ -55,6 +59,9 @@ public class Main implements KeepAll {
     }
 
     public static void forkAndSpecializePost(int pid, String appDataDir, String niceName) {
+        if (isBlackListedProcess(Process.myUid())) {
+            return;
+        }
         if (pid == 0) {
             Utils.logD(forkAndSpecializePramsStr + " = " + Process.myPid());
             if (isBlackWhiteListEnabled()) {
@@ -96,6 +103,12 @@ public class Main implements KeepAll {
             // in zygote process, res is child zygote pid
             // don't print log here, see https://github.com/RikkaApps/Riru/blob/77adfd6a4a6a81bfd20569c910bc4854f2f84f5e/riru-core/jni/main/jni_native_method.cpp#L55-L66
         }
+    }
+
+    private static boolean isBlackListedProcess(int uid) {
+        return ProcessHelper.isIsolated(uid)
+                || ProcessHelper.isRELROUpdater(uid)
+                || ProcessHelper.isWebViewZygote(uid);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

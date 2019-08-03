@@ -14,3 +14,15 @@ LOCAL_CFLAGS     := -Wall -Wextra -Werror -fvisibility=hidden
 LOCAL_CONLYFLAGS := -std=c11
 LOCAL_LDLIBS     := -llog
 include $(BUILD_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE     := substrate
+LOCAL_SRC_FILES  := substrate/hde64.c \
+                    substrate/SubstrateDebug.cpp \
+                    substrate/SubstrateHook.cpp \
+                    substrate/SubstratePosixMemory.cpp
+LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_CFLAGS     := -Wall -Wextra -fvisibility=hidden
+LOCAL_CONLYFLAGS := -std=c11
+LOCAL_LDLIBS     := -llog
+include $(BUILD_STATIC_LIBRARY)

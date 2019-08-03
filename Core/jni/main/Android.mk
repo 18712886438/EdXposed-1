@@ -7,6 +7,7 @@ LOCAL_C_INCLUDES := \
 	jni/external/include
 LOCAL_CPPFLAGS += $(CPPFLAGS)
 LOCAL_STATIC_LIBRARIES := xhook
+LOCAL_STATIC_LIBRARIES := substrate
 LOCAL_LDLIBS += -ldl -llog
 LOCAL_LDFLAGS := -Wl
 

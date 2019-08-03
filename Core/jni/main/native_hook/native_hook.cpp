@@ -6,6 +6,7 @@
 #include <inject/config_manager.h>
 
 #include "include/logging.h"
+#include
 #include "native_hook.h"
 
 static bool inlineHooksInstalled = false;
@@ -15,7 +16,7 @@ static const char *(*getDesc)(void *, std::string *);
 static bool (*isInSamePackageBackup)(void *, void *) = nullptr;
 
 // runtime
-void *runtime_ = nullptr;
+void *runtimeins_ = nullptr;
 
 void (*deoptBootImage)(void *runtime) = nullptr;
 
@@ -195,8 +196,8 @@ void hookRuntime(int api_level, void *artHandle, void (*hookFun)(void *, void *,
     void *runtimeInitSym = nullptr;
     if (api_level >= ANDROID_O) {
         // only oreo has deoptBootImageSym in Runtime
-        runtime_ = dlsym(artHandle, "_ZN3art7Runtime9instance_E");
-        if (!runtime_) { LOGW("runtime instance not found"); }
+        runtimeins_ = dlsym(artHandle, "_ZN3art7Runtime9instance_E");
+        if (!runtimeins_) { LOGW("runtime instance not found"); }
         runtimeInitSym = dlsym(artHandle, "_ZN3art7Runtime4InitEONS_18RuntimeArgumentMapE");
         if (!runtimeInitSym) {
             LOGE("can't find runtimeInitSym: %s", dlerror());
@@ -274,14 +275,21 @@ void install_inline_hooks() {
         return;
     }
     LOGI("using api level %d", api_level);
-    void *whaleHandle = dlopen(kLibWhalePath, RTLD_LAZY | RTLD_GLOBAL);
+
+    void *whaleHandle = nullptr;
+#ifdef __LP64__
+    whaleHandle = dlopen(kLibWhalePath, RTLD_LAZY | RTLD_GLOBAL);
     if (!whaleHandle) {
         LOGE("can't open libwhale: %s", dlerror());
         return;
     }
     void *hookFunSym = dlsym(whaleHandle, "WInlineHookFunction");
+#else
+    void *hookFunSym = (void *) MSHookFunction;
+#endif
+
     if (!hookFunSym) {
-        LOGE("can't get WInlineHookFunction: %s", dlerror());
+        LOGE("can't getInlineHookFunction: %s", dlerror());
         return;
     }
     void (*hookFun)(void *, void *, void **) = reinterpret_cast<void (*)(void *, void *,
