@@ -4,9 +4,10 @@ include $(CLEAR_VARS)
 LOCAL_MODULE     := libriru_edxposed
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH) \
-	jni/external/include
+	jni/external/include \
+	jni/external/substrate
 LOCAL_CPPFLAGS += $(CPPFLAGS)
-LOCAL_STATIC_LIBRARIES := xhook
+LOCAL_STATIC_LIBRARIES += xhook
 LOCAL_STATIC_LIBRARIES := substrate
 LOCAL_LDLIBS += -ldl -llog
 LOCAL_LDFLAGS := -Wl

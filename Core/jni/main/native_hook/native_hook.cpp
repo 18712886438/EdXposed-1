@@ -6,8 +6,8 @@
 #include <inject/config_manager.h>
 
 #include "include/logging.h"
-#include
 #include "native_hook.h"
+#include <SubstrateHook.h>
 
 static bool inlineHooksInstalled = false;
 

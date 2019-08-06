@@ -20,7 +20,7 @@
 /* }}} */
 
 #define SubstrateInternal
-#include "include/substrate/CydiaSubstrate.h"
+#include "CydiaSubstrate.h"
 
 #include <sys/mman.h>
 
